@@ -1,6 +1,10 @@
-runs/
-__pycache__/
+riskbird-company-check/runs/
+riskbird-company-check/logs/*
+!riskbird-company-check/logs/.gitkeep
+riskbird-company-check/.env
+riskbird-company-check/cookie.py
+**/__pycache__/
 *.pyc
+*.egg-info/
 .venv/
 .DS_Store
-

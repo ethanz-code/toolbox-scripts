@@ -1,55 +1,48 @@
-# toolboxscript
+# toolbox-scripts
 
-一个可持续扩展的脚本合集仓库。
+脚本合集仓库。这里放的是多个独立子项目，每个子项目都可以用自己最合适的语言实现，彼此不强耦合。
 
-## 现在有啥
+## 当前子项目
 
-- `riskbird-check`：风鸟企业核验
+- [`riskbird-company-check/`](./riskbird-company-check/)：风鸟企业经营核验脚本，读取企业表格后逐条查询风鸟，输出经营异常、需复核、未查到等结果。
 
-## 运行方式
+## 目录约定
 
-```bash
-export RISKBIRD_COOKIE='...'
-toolboxscript riskbird-check --input /path/to/企业数据-整理-Bad.xlsx
-```
+每个子项目建议放在独立目录下，例如：
 
-也可以直接用：
+- `riskbird-company-check/`
+- `xxx-report-export/`
+- `yyy-data-cleanup/`
 
-```bash
-python -m toolboxscript riskbird-check --input /path/to/企业数据-整理-Bad.xlsx
-```
+每个子项目内部可以按自己的技术栈组织，不强制统一语言。
 
-## 每次运行会留下些什么
+## 新增子项目规则
 
-每次都会生成一个独立目录：
+1. 子项目必须独立可运行，有明确入口。
+2. 子项目目录内必须有自己的 `README.md`，写清楚：
+   - 这个脚本是干什么的
+   - 依赖什么
+   - 怎么运行
+   - 输入和输出是什么
+   - 日志和数据落在哪里
+   - 风控、限速、重试、账号信息怎么处理
+3. 可以使用 `Python`、`JavaScript`、`Go` 等任意语言，但要保持单个子项目内部风格一致。
+4. 涉及外部网站、接口、登录态、Cookie、Token 的内容，默认不要入仓，改用 `.env`、本地配置文件或运行时传入。
+5. 每个子项目最好都保留以下产物目录，便于后续排查：
+   - `data/`：输入样例、静态数据、中间数据
+   - `logs/`：运行日志
+   - `runs/`：每次执行的结果目录
+6. 如果后续脚本很多，优先继续加新子目录，不要把所有脚本堆在一个入口里。
 
-```text
-runs/YYYY-MM-DD_HHMMSS_riskbird-check/
-```
+## 目录内容建议
 
-目录里会有：
+不同语言可以采用不同结构，但建议保留这些角色：
 
-- `log.jsonl`：阶段日志、逐条查询日志、重试日志
-- `summary.json`：本次运行汇总
-- `raw/`：搜索和详情接口原始响应
-- `output/`：最终导出的 xlsx/csv
-- `input.xlsx`：输入文件快照（如果开启复制）
+- `main` / `cmd`：入口
+- `common` / `shared`：通用工具
+- `connectors`：外部系统适配层
+- `runners` / `services`：业务流程层
 
-## 风控
+## 现阶段说明
 
-- 默认单线程、低频率查询
-- 每条企业之间有随机间隔
-- 失败会退避重试
-- 搜索命中但证据不足时，默认进 `需复核`
-- 只有多种检索都没有结果时才算 `未查到`
-
-## 扩展新脚本
-
-后续新增脚本时，优先复用：
-
-- `toolboxscript.common`：日志、重试、路径、文本处理、Excel
-- `toolboxscript.connectors`：外部服务适配器
-- `toolboxscript.runners`：脚本业务流
-
-只需要再加一个 runner 和 CLI 子命令即可。
-
+当前仓库先以 `riskbird-company-check` 作为首个完整子项目，后续新增脚本时继续沿用这种“子项目独立、仓库统一管理”的方式。
